@@ -32,6 +32,9 @@ def main():
             else:
                 curren_level += 1
             game = Game(id="1", level=curren_level)
+        elif game.state == 'lost':
+            game_over_screen(DISPLAYSURF)
+            game = Game(id="1", level=curren_level)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -146,8 +149,31 @@ def draw_map(mapObj, player_position):
 
     return mapSurf
 
-def game_over_screen():
-    overlay = pygame.Surface((WINWIDTH, WINHEIGHT))
+
+def game_over_screen(screen):
+    """Displays a Game Over screen with options to retry or quit."""
+    font = pygame.font.Font(None, 50)
+    game_over_text = font.render("Game Over", True, (255, 0, 0))
+    retry_text = font.render("Press ENTER to Retry", True, (255, 255, 255))
+    quit_text = font.render("Press ESC to Quit", True, (255, 255, 255))
+
+    screen.fill((0, 0, 0))  # Black background
+    screen.blit(game_over_text, (screen.get_width() // 2 - game_over_text.get_width() // 2, 150))
+    screen.blit(retry_text, (screen.get_width() // 2 - retry_text.get_width() // 2, 250))
+    screen.blit(quit_text, (screen.get_width() // 2 - quit_text.get_width() // 2, 300))
+    pygame.display.flip()
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:  # Restart game
+                    return True
+                if event.key == pygame.K_ESCAPE:  # Quit game
+                    pygame.quit()
+                    exit()
 
 if __name__ == '__main__':
     main()
