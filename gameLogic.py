@@ -12,8 +12,7 @@ class Direction(Enum):
 
 
 class Game:
-    def __init__(self, id: str, level: int):
-        self.id: str = id
+    def __init__(self, level: int):
         self.state: str = "playing"
         self.validMoves = []
         self.losingMoves = []
@@ -42,6 +41,9 @@ class Game:
 
         if not self.check_for_border(x, y):
 
+            dictionary = {"matrix": copy.deepcopy(self.board), "playerPos": self.player_pos}
+            self.moves.append(dictionary)
+
             if self.board[x][y] == "B":
                 if direction == Direction.RIGHT and not self.check_for_border(x, y + 1):
                     self.board[x][y] = "."
@@ -57,8 +59,6 @@ class Game:
                     self.board[x + 1][y] = "B"
 
             if self.board[x][y] != "B":
-                dictionary = {"matrix": self.board, "playerPos": self.player_pos}
-                self.moves.append(dictionary)
 
                 self.decrement_ephemeral_walls()
                 self.update_elements("W")

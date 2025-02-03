@@ -5,8 +5,8 @@ from pygame.locals import *
 from gameLogic import Game, Direction
 
 FPS = 30
-WINWIDTH = 800 # width of the program's window, in pixels
-WINHEIGHT = 600 # height in pixels
+WINWIDTH = 900 # width of the program's window, in pixels
+WINHEIGHT = 700 # height in pixels
 
 TILEWIDTH = 40
 TILEHEIGHT = 40
@@ -20,7 +20,7 @@ def main():
 
     DISPLAYSURF = pygame.display.set_mode((WINWIDTH, WINHEIGHT))
     curren_level = 1
-    game = Game(id="1", level=curren_level)
+    game = Game(level=curren_level)
 
     while True:
         board = game.board
@@ -31,10 +31,10 @@ def main():
                 curren_level = 1
             else:
                 curren_level += 1
-            game = Game(id="1", level=curren_level)
+            game = Game(level=curren_level)
         elif game.state == 'lost':
             game_over_screen(DISPLAYSURF)
-            game = Game(id="1", level=curren_level)
+            game = Game(level=curren_level)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -54,9 +54,13 @@ def main():
                 if moveTo != "":
                     game.move(moveTo)
 
+                if event.key == K_u:
+                    game.undo()
+                    board = game.board
+
         mapSurf = draw_map(board, player_position)
         mapSurfRect = mapSurf.get_rect()
-        mapSurfRect.center = (int(WINWIDTH/2), int(WINHEIGHT/2))
+        mapSurfRect.center = (int(WINWIDTH/2), int(WINHEIGHT/2 + 50))
 
         DISPLAYSURF.blit(mapSurf, mapSurfRect)
 
