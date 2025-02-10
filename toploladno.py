@@ -1,40 +1,42 @@
 import pygame
-import itertools
 from pygame.locals import *
 
 from gameLogic import Game, Direction
 
 FPS = 30
-WINWIDTH = 900 # width of the program's window, in pixels
-WINHEIGHT = 700 # height in pixels
+WINWIDTH = 900
+WINHEIGHT = 700
 
-TILEWIDTH = 40
-TILEHEIGHT = 40
+TILEWIDTH = 50
+TILEHEIGHT = 50
 
-BGCOLOR = (  225, 225, 255)
+BGCOLOR = (0, 25, 10)
+
 
 def main():
-    global WINWIDTH, WINHEIGHT
     pygame.init()
     FPSCLOCK = pygame.time.Clock()
+    font = pygame.font.Font(None, 24)
 
     DISPLAYSURF = pygame.display.set_mode((WINWIDTH, WINHEIGHT))
-    curren_level = 1
-    game = Game(level=curren_level)
+    current_level = 1
+    game = Game(level=current_level)
 
     while True:
+        DISPLAYSURF.fill(BGCOLOR)
         board = game.board
         player_position = game.player_pos
+        new_game_button, undo_button = draw_buttons(DISPLAYSURF)
 
         if game.state == 'won':
-            if curren_level == 5:
-                curren_level = 1
+            if current_level == 5:
+                current_level = 1
             else:
-                curren_level += 1
-            game = Game(level=curren_level)
+                current_level += 1
+            game = Game(level=current_level)
         elif game.state == 'lost':
             game_over_screen(DISPLAYSURF)
-            game = Game(level=curren_level)
+            game = Game(level=current_level)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -42,52 +44,44 @@ def main():
                 exit()
 
             elif event.type == KEYDOWN:
-                moveTo = ""
                 if event.key == K_LEFT or event.key == K_a:
-                    moveTo = Direction.LEFT
+                    game.move(Direction.LEFT)
                 elif event.key == K_RIGHT or event.key == K_d:
-                    moveTo = Direction.RIGHT
+                    game.move(Direction.RIGHT)
                 elif event.key == K_UP or event.key == K_w:
-                    moveTo = Direction.UP
+                    game.move(Direction.UP)
                 elif event.key == K_DOWN or event.key == K_s:
-                    moveTo = Direction.DOWN
-                if moveTo != "":
-                    game.move(moveTo)
+                    game.move(Direction.DOWN)
 
                 if event.key == K_u:
                     game.undo()
-                    board = game.board
+
+            elif event.type == MOUSEBUTTONDOWN:
+                if new_game_button.collidepoint(event.pos):
+                    game = Game(level=current_level)
+
+                elif undo_button.collidepoint(event.pos):
+                    game.undo()
 
         mapSurf = draw_map(board, player_position)
         mapSurfRect = mapSurf.get_rect()
         mapSurfRect.center = (int(WINWIDTH/2), int(WINHEIGHT/2 + 50))
 
+        new_game_text = font.render("Level: " + str(current_level), True, (255, 255, 255))
+        DISPLAYSURF.blit(new_game_text, (50, 90))
+
         DISPLAYSURF.blit(mapSurf, mapSurfRect)
 
-        pygame.display.update()  # Refresh the screen
+        pygame.display.update()
         FPSCLOCK.tick()
 
-def adjust_brightness(image, brightness=1.0):
-    """Modify brightness where 1.0 is normal, <1.0 is darker, >1.0 is brighter"""
-    bright_image = image.copy()
-    brightness_value = int(255 * brightness)
 
-    # Ensure the value is clamped between 0 and 255
-    brightness_value = max(0, min(255, brightness_value))
-
-    # Apply brightness filter using an (R, G, B, A) tuple
-    bright_image.fill((brightness_value, brightness_value, brightness_value, 255), special_flags=pygame.BLEND_RGBA_MULT)
-    return bright_image
-
-
-# Function to overlay images
 def overlay_images(background, overlay):
     combined = background.copy()
     combined.blit(overlay, (0, 0))
     return combined
 
 
-# Function to add border
 def add_border(image, color=(99, 95, 95), border_size=1):
     bordered = pygame.Surface((image.get_width() + border_size * 2, image.get_height() + border_size * 2),
                               pygame.SRCALPHA)
@@ -96,22 +90,42 @@ def add_border(image, color=(99, 95, 95), border_size=1):
     return bordered
 
 
-def draw_map(mapObj, player_position):
-    """Draws the map to a Surface object, including the player and lava."""
+def draw_buttons(screen):
+    font = pygame.font.Font(None, 24)
+    button_color = (100, 6, 210)
+    text_color = (255, 255, 255)
 
+    # New Game Button
+    new_game_rect = pygame.Rect(WINWIDTH - 250, 70, 90, 40)
+    pygame.draw.rect(screen, button_color, new_game_rect)
+    new_game_text = font.render("New Game", True, text_color)
+    screen.blit(new_game_text, (new_game_rect.centerx - (new_game_text.get_width() // 2),
+                                new_game_rect.centery - (new_game_text.get_height() // 2)))
+
+    # Undo Button
+    undo_rect = pygame.Rect(WINWIDTH - 150, 70, 90, 40)
+    pygame.draw.rect(screen, button_color, undo_rect)
+    undo_text = font.render("Undo", True, text_color)
+    screen.blit(undo_text, (undo_rect.centerx - (undo_text.get_width() // 2),
+                            undo_rect.centery - (undo_text.get_height() // 2)))
+
+    return new_game_rect, undo_rect
+
+
+def draw_map(mapObj, player_position):
+    font = pygame.font.Font(None, 36)
     mapSurfWidth = len(mapObj[0]) * TILEWIDTH
     mapSurfHeight = len(mapObj) * TILEHEIGHT
     mapSurf = pygame.Surface((mapSurfWidth, mapSurfHeight), pygame.SRCALPHA)  # Allow transparency
     mapSurf.fill(BGCOLOR)
 
-    # Load and modify images
     tile_images = {
-        '#': adjust_brightness(pygame.transform.scale(
+        '#': pygame.transform.scale(
             pygame.image.load('images/tile.png').convert_alpha(), (TILEWIDTH, TILEHEIGHT)
-        ), 1.0),
-        '.': adjust_brightness(pygame.transform.scale(
+        ),
+        '.': pygame.transform.scale(
             pygame.image.load('images/floor.png').convert_alpha(), (TILEWIDTH, TILEHEIGHT)
-        ), 1.45),
+        ),
         'G': add_border(overlay_images(
             pygame.transform.scale(
                 pygame.image.load('images/tile.png').convert_alpha(), (TILEWIDTH, TILEHEIGHT)
@@ -130,26 +144,36 @@ def draw_map(mapObj, player_position):
         ),
     }
 
-    player_frames = [
-        pygame.transform.scale(
+    number_tile = pygame.transform.scale(
+        pygame.image.load('images/tile.png').convert_alpha(), (TILEWIDTH, TILEHEIGHT)
+    )
+
+    player = pygame.transform.scale(
             pygame.image.load(f'images/duck.gif').convert_alpha(), (TILEWIDTH, TILEHEIGHT)
         )
-    ]
-    player_animation = itertools.cycle(player_frames)  # Placeholder for multiple frames
 
     for y in range(len(mapObj)):
         for x in range(len(mapObj[y])):
             tile_type = mapObj[y][x]
             pos = (x * TILEWIDTH, y * TILEHEIGHT)
 
-            # Blit the correct tile image
             if tile_type in tile_images:
                 mapSurf.blit(tile_images[tile_type], pos)
+            elif tile_type.isnumeric():
+                mapSurf.blit(number_tile, pos)
 
-    # Draw player with animation
+                green_overlay = pygame.Surface((TILEWIDTH, TILEHEIGHT), pygame.SRCALPHA)
+                green_overlay.fill((0, 255, 8, int(255 * 0.15)))
+                mapSurf.blit(green_overlay, pos)
+
+                number_text = font.render(tile_type, True, (255, 255, 255))
+                text_rect = number_text.get_rect(center=(pos[0] + TILEWIDTH // 2, pos[1] + TILEHEIGHT // 2))
+                mapSurf.blit(number_text, text_rect)
+
+
     player_x, player_y = player_position
     pos = (player_y * TILEWIDTH, player_x * TILEHEIGHT)
-    mapSurf.blit(next(player_animation), pos)
+    mapSurf.blit(player, pos)
 
     return mapSurf
 
@@ -178,6 +202,7 @@ def game_over_screen(screen):
                 if event.key == pygame.K_ESCAPE:  # Quit game
                     pygame.quit()
                     exit()
+
 
 if __name__ == '__main__':
     main()

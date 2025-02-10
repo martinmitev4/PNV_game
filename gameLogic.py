@@ -22,12 +22,10 @@ class Game:
 
         self.player_pos = level_data["playerPos"]
         self.board = level_data["board"]
-        self.highlight()
 
         self.moves = []
 
     def move(self, direction: Direction):
-        # TODO: Implement move() method
         x = self.player_pos[0]
         y = self.player_pos[1]
         if direction == Direction.RIGHT:
@@ -70,7 +68,6 @@ class Game:
                     self.state = "lost"
 
                 self.player_pos = [x, y]
-                self.highlight()
 
     def is_at_goal(self, x, y):
         return self.board[x][y] == "G"
@@ -130,36 +127,3 @@ class Game:
             prev_state = self.moves.pop()
             self.board = prev_state["matrix"]
             self.player_pos = prev_state["playerPos"]
-
-    def highlight(self):
-        self.validMoves.clear()
-        self.losingMoves.clear()
-
-        x = self.player_pos[0]
-        y = self.player_pos[1]
-
-        fields = [(x, y - 1), (x, y + 1), (x + 1, y), (x - 1, y)]
-        good_chars = [".", "W", "G", "B"]
-        bad_chars = ["L"]
-        for field in fields:
-            if self.board[field[0]][field[1]] in good_chars:
-                self.validMoves.append(field)
-
-            # if self.board[field[0] + 1][field[1]] in bad_chars:
-            #     self.losingMoves.append(field)
-            # if self.board[field[0] - 1][field[1]] in bad_chars:
-            #     self.losingMoves.append(field)
-            # if self.board[field[0]][field[1] + 1] in bad_chars:
-            #     self.losingMoves.append(field)
-            # if self.board[field[0]][field[1] - 1] in bad_chars:
-            #     self.losingMoves.append(field)
-
-    def view(self):
-        return {
-            "gameId": self.id,
-            "state": self.state,
-            "playerPos": self.player_pos,
-            "matrix": self.board,
-            "validMoves": self.validMoves,
-            "losingMoves": self.losingMoves,
-        }
