@@ -14,8 +14,6 @@ class Direction(Enum):
 class Game:
     def __init__(self, level: int):
         self.state: str = "playing"
-        self.validMoves = []
-        self.losingMoves = []
         file_path = Path(__file__).parent / "levels" / f"level{level}.json"
         with open(file_path, "r") as level_file:
             level_data = json.load(level_file)

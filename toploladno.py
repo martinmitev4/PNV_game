@@ -130,14 +130,14 @@ def draw_map(mapObj, player_position):
             pygame.transform.scale(
                 pygame.image.load('images/tile.png').convert_alpha(), (TILEWIDTH, TILEHEIGHT)
             ), pygame.transform.scale(
-                pygame.image.load('images/p2.gif').convert_alpha(), (TILEWIDTH, TILEHEIGHT)
+                pygame.image.load('images/goal.png').convert_alpha(), (TILEWIDTH, TILEHEIGHT)
             )
         )),
         'L': pygame.transform.scale(
-            pygame.image.load('images/lava48.gif').convert_alpha(), (TILEWIDTH, TILEHEIGHT)
+            pygame.image.load('images/lava.png').convert_alpha(), (TILEWIDTH, TILEHEIGHT)
         ),
         'W': pygame.transform.scale(
-            pygame.image.load('images/WaterTileOcean.gif').convert_alpha(), (TILEWIDTH, TILEHEIGHT)
+            pygame.image.load('images/water.png').convert_alpha(), (TILEWIDTH, TILEHEIGHT)
         ),
         'B': pygame.transform.scale(
             pygame.image.load('images/box.png').convert_alpha(), (TILEWIDTH, TILEHEIGHT)
@@ -149,7 +149,7 @@ def draw_map(mapObj, player_position):
     )
 
     player = pygame.transform.scale(
-            pygame.image.load(f'images/duck.gif').convert_alpha(), (TILEWIDTH, TILEHEIGHT)
+            pygame.image.load(f'images/duck.png').convert_alpha(), (TILEWIDTH, TILEHEIGHT)
         )
 
     for y in range(len(mapObj)):
