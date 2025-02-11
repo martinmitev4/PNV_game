@@ -127,3 +127,4 @@ class Game:
             prev_state = self.moves.pop()
             self.board = prev_state["matrix"]
             self.player_pos = prev_state["playerPos"]
+

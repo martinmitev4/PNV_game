@@ -17,7 +17,6 @@ def main():
     pygame.init()
     FPSCLOCK = pygame.time.Clock()
     font = pygame.font.Font(None, 24)
-
     DISPLAYSURF = pygame.display.set_mode((WINWIDTH, WINHEIGHT))
     current_level = 1
     game = Game(level=current_level)
@@ -30,6 +29,7 @@ def main():
 
         if game.state == 'won':
             if current_level == 5:
+                you_win_screen(DISPLAYSURF)
                 current_level = 1
             else:
                 current_level += 1
@@ -170,7 +170,6 @@ def draw_map(mapObj, player_position):
                 text_rect = number_text.get_rect(center=(pos[0] + TILEWIDTH // 2, pos[1] + TILEHEIGHT // 2))
                 mapSurf.blit(number_text, text_rect)
 
-
     player_x, player_y = player_position
     pos = (player_y * TILEWIDTH, player_x * TILEHEIGHT)
     mapSurf.blit(player, pos)
@@ -202,6 +201,17 @@ def game_over_screen(screen):
                 if event.key == pygame.K_ESCAPE:  # Quit game
                     pygame.quit()
                     exit()
+
+
+def you_win_screen(screen):
+    font = pygame.font.Font(None, 50)
+    win_text = font.render("YOU WIN!", True, (255, 215, 0))  # Gold color
+
+    screen.fill((0, 0, 0))  # Black background
+    screen.blit(win_text, (screen.get_width() // 2 - win_text.get_width() // 2, 300))
+    pygame.display.flip()
+
+    pygame.time.delay(2000)
 
 
 if __name__ == '__main__':
