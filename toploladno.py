@@ -95,14 +95,12 @@ def draw_buttons(screen):
     button_color = (100, 6, 210)
     text_color = (255, 255, 255)
 
-    # New Game Button
     new_game_rect = pygame.Rect(WINWIDTH - 250, 70, 90, 40)
     pygame.draw.rect(screen, button_color, new_game_rect)
     new_game_text = font.render("New Game", True, text_color)
     screen.blit(new_game_text, (new_game_rect.centerx - (new_game_text.get_width() // 2),
                                 new_game_rect.centery - (new_game_text.get_height() // 2)))
 
-    # Undo Button
     undo_rect = pygame.Rect(WINWIDTH - 150, 70, 90, 40)
     pygame.draw.rect(screen, button_color, undo_rect)
     undo_text = font.render("Undo", True, text_color)
@@ -116,7 +114,7 @@ def draw_map(mapObj, player_position):
     font = pygame.font.Font(None, 36)
     mapSurfWidth = len(mapObj[0]) * TILEWIDTH
     mapSurfHeight = len(mapObj) * TILEHEIGHT
-    mapSurf = pygame.Surface((mapSurfWidth, mapSurfHeight), pygame.SRCALPHA)  # Allow transparency
+    mapSurf = pygame.Surface((mapSurfWidth, mapSurfHeight), pygame.SRCALPHA)
     mapSurf.fill(BGCOLOR)
 
     tile_images = {
@@ -178,13 +176,12 @@ def draw_map(mapObj, player_position):
 
 
 def game_over_screen(screen):
-    """Displays a Game Over screen with options to retry or quit."""
     font = pygame.font.Font(None, 50)
     game_over_text = font.render("Game Over", True, (255, 0, 0))
     retry_text = font.render("Press ENTER to Retry", True, (255, 255, 255))
     quit_text = font.render("Press ESC to Quit", True, (255, 255, 255))
 
-    screen.fill((0, 0, 0))  # Black background
+    screen.fill((0, 0, 0))
     screen.blit(game_over_text, (screen.get_width() // 2 - game_over_text.get_width() // 2, 150))
     screen.blit(retry_text, (screen.get_width() // 2 - retry_text.get_width() // 2, 250))
     screen.blit(quit_text, (screen.get_width() // 2 - quit_text.get_width() // 2, 300))
@@ -196,18 +193,18 @@ def game_over_screen(screen):
                 pygame.quit()
                 exit()
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RETURN:  # Restart game
+                if event.key == pygame.K_RETURN:
                     return True
-                if event.key == pygame.K_ESCAPE:  # Quit game
+                if event.key == pygame.K_ESCAPE:
                     pygame.quit()
                     exit()
 
 
 def you_win_screen(screen):
     font = pygame.font.Font(None, 50)
-    win_text = font.render("YOU WIN!", True, (255, 215, 0))  # Gold color
+    win_text = font.render("YOU WIN!", True, (255, 215, 0))
 
-    screen.fill((0, 0, 0))  # Black background
+    screen.fill((0, 0, 0))
     screen.blit(win_text, (screen.get_width() // 2 - win_text.get_width() // 2, 300))
     pygame.display.flip()
 
